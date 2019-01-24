@@ -2,26 +2,38 @@ const superagent = require('superagent');
 const _ = require('lodash');
 const xmlParse = require("xml-parse");
 
-const alert = console.error;
+function create(username, password, phone_number, message) {
 
-function create(url, headers, xml, timeout = 5000) {
+    if (_.isEmpty(username)) {
+        throw ("Invalid username");
+    }
+    if (_.isEmpty(password)) {
+        throw ("Invalid password");
+    }
+    if (_.isEmpty(phone_number)) {
+        throw ("Invalid phone number");
+    }
+    if (_.isEmpty(message)) {
+        throw ("Invalid message");
+    }
 
-    if (_.isEmpty(url)) {
-        throw ("Invalid url");
-    }
-    if (_.isEmpty(headers)) {
-        throw ("Invalid headers");
-    }
-    if (_.isEmpty(xml)) {
-        throw ("Invalid xml");
-    }
+    const min=1000; 
+    const max=9999;  
+    const random = Math.floor(Math.random() * (+max - +min)) + +min; 
+    const xml = '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:bul="http://www.example.org/bulkSms/"><soapenv:Header/><soapenv:Body><bul:SMSSubmitReq><Username>'+username+'</Username><Password>'+password+'</Password><InterfaceID>bk</InterfaceID><SmsRecord><SmsId>'+random+'</SmsId><SmsRecipient>'+phone_number+'</SmsRecipient><SmsText>'+message+'</SmsText><SmsSenderId>L-PESA</SmsSenderId></SmsRecord><ReportEnabled>true</ReportEnabled></bul:SMSSubmitReq></soapenv:Body></soapenv:Envelope>';
+
+    const headers = {
+        'user-agent': 'Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0)',
+        'Content-Type': 'text/xml;charset=UTF-8',
+        'soapAction': '',
+    };
 
     let response = {};
     superagent
-        .post(url)
+        .post('https://onfon.co.ke:8080/smshttppush/index.php?wsdl')
         .send(xml) // query string
         .timeout({
-            response: timeout,  // Wait 5 seconds for the server to start sending,
+            response: 5000,  // Wait 5 seconds for the server to start sending,
             deadline: 60000, // but allow 1 minute for the file to finish loading.
         })
         .set(headers)
@@ -29,7 +41,7 @@ function create(url, headers, xml, timeout = 5000) {
             // Do something
             if (err) 
             { 
-                console.log('err: ' + JSON.stringify(err));
+                //console.log('err: ' + JSON.stringify(err));
                 response = {
                     type : 'error',
                     response: err
