@@ -53,9 +53,9 @@ function create(username, password, phone_number, message) {
                 var xmlDoc = new xmlParse.DOM(xmlParse.parse(apiRes));
                 var StatusRecord = xmlDoc.document.getElementsByTagName("StatusRecord")[0];
                 var StatusCode = StatusRecord.childNodes[0].innerXML; //StatusRecord.childNodes[0].getElementsByTagName("StatusCode")[0];
-                //console.log('res: ' + JSON.stringify(StatusRecord));
-                //console.log(JSON.stringify(StatusRecord.childNodes[0]));
-                //console.log(StatusCode);
+                console.log('res: ' + JSON.stringify(StatusRecord));
+                console.log(JSON.stringify(StatusRecord.childNodes[0]));
+                console.log(StatusCode);
                 if(StatusCode == 0)
                 {
                     response = {
